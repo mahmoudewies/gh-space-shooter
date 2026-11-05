@@ -1,174 +1,54 @@
-# gh-space-shooter 🚀
+# 💜 Mahmoud's Purple Space Shooter
 
-Transform your GitHub contribution graph into an epic space shooter game! 
+<p align="center">
+  <img src="game.gif" alt="Mahmoud's GitHub contribution space shooter" width="100%" />
+</p>
 
-![Example Game](example.gif)
+<p align="center">
+  <strong>MY CONTRIBUTIONS. MY BATTLEFIELD.</strong><br/>
+  A cyberpunk-purple Galaga-style animation generated from my GitHub contribution graph.
+</p>
 
-## Usage
+<p align="center">
+  <code>#090511</code> · <code>#6D4AFF</code> · <code>#B9A2FF</code> · <code>#E879F9</code>
+</p>
 
-### Onetime Generation
+## How it works
 
-A [web interface](https://gh-space-shooter.kiyo-n-zane.com) is available for on-demand GIF generation without installing anything locally. 
+Every contribution cell becomes an enemy. The original game engine maps contribution activity to enemy strength, then animates a ship clearing the grid with projectiles, particle effects, and a moving starfield.
 
-### GitHub Action
+This fork preserves the original gameplay and contribution mapping while applying a custom purple palette inside the renderer. The colors are part of the generated frames, not a post-processing tint.
 
-Automatically update your game GIF daily using GitHub Actions! Add this workflow to your repository at `.github/workflows/update-game.yml`:
+## Automatic updates
 
-```yaml
-name: Update Space Shooter Game
+The GitHub Actions workflow at `.github/workflows/update-game.yml` is intended to regenerate `game.gif` daily and can also be started manually from the **Actions** tab. It installs this fork so the customized renderer is used.
 
-on:
-  schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC
-  workflow_dispatch:  # Allow manual trigger
+## Run locally
 
-permissions:
-  contents: write
-
-jobs:
-  update-game:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 2  # This is crucial!
-
-      - uses: czl9707/gh-space-shooter@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          output-path: 'game.gif'
-          strategy: 'random'
-```
-
-Then display it in your README:
-```markdown
-![My GitHub Game](game.gif)
-```
-
-> **Github Action V2 Change:** : By default, the action amends the previous commit if it only contains the game file with the same commit message. This prevents repository bloat from daily commits. Set `no-amend: true` to disable this behavior.
-> Need `fetch-depth: 2` in `actions/checkout@v6` to have this working.
-
-**Action Inputs:**
-- `github-token` (required): GitHub token for fetching contributions
-- `username` (optional): Username to generate game for (defaults to repo owner)
-- `output-path` (optional): Where to save the animation, supports `.gif` or `.webp` (default: `gh-space-shooter.gif`)
-- `strategy` (optional): Attack pattern - `column`, `row`, or `random` (default: `random`)
-- `fps` (optional): Frames per second for the animation (default: `40`)
-- `no-amend` (optional): Set to `true` to disable amending previous commits (default: `false`)
-- `no-commit` (optional): Set to `true` to skip committing and pushing entirely; the generated file is left in the workspace so you can commit it yourself, e.g. to batch several action runs into one commit (default: `false`)
-- `commit-message` (optional): Commit message for the update
-
-### From PyPI
+Requires Python 3.12+.
 
 ```bash
-pip install gh-space-shooter
-```
-
-### From Source
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/gh-space-shooter.git
+git clone https://github.com/mahmoudewies/gh-space-shooter.git
 cd gh-space-shooter
-
-# Install with uv
-uv sync
-
-# Or with pip
-pip install -e .
+pip install .
 ```
 
-## Setup
-
-1. Create a GitHub Personal Access Token:
-   - Go to https://github.com/settings/tokens
-   - Click "Generate new token (classic)"
-   - Select scopes: `read:user`
-   - Copy the generated token
-
-2. Set up your environment:
-   ```bash
-   # Copy the example env file
-   touch .env
-   echo "GH_TOKEN=your_token_here" >> .env
-   ```
-
-   Alternatively, export the token directly:
-   ```bash
-   export GH_TOKEN=your_token_here
-   ```
-
-## CLI Usage
-
-### Generate Your Game Animation (GIF or WebP)
-
-Transform your GitHub contributions into an epic space shooter!
+Set a GitHub token with `read:user` permission, then run:
 
 ```bash
-# Basic usage - generates username-gh-space-shooter.gif
-gh-space-shooter <username>
+# Linux / macOS
+export GH_TOKEN="your_token"
+gh-space-shooter mahmoudewies --output game.gif --strategy random
 
-# Examples
-gh-space-shooter torvalds
-gh-space-shooter octocat
-
-# Specify custom output filename (GIF or WebP)
-gh-space-shooter torvalds --output my-epic-game.gif
-gh-space-shooter torvalds -o my-game.webp
-
-# Choose enemy attack strategy
-gh-space-shooter torvalds --strategy row      # Enemies attack in rows
-gh-space-shooter torvalds -s random           # Random chaos (default)
-
-# Adjust animation frame rate
-gh-space-shooter torvalds --fps 25            # Lower Frame rate, Smaller file size
-gh-space-shooter torvalds --fps 40            # Default Frame rate, Larger file size
-
-# Stop the animation earlier
-gh-space-shooter torvalds --max-frame 200     # Stop after 200 frames
+# Windows PowerShell
+$env:GH_TOKEN="your_token"
+gh-space-shooter mahmoudewies --output game.gif --strategy random
 ```
 
-This creates an animated GIF showing:
-- Your contribution graph as enemies (more contributions = stronger enemies)
-- A Galaga-style spaceship battling through your coding history
-- Enemy attack patterns based on your chosen strategy
-- Smooth animations with randomized particle effects
-- Your contribution stats displayed in the console
+## Credits
 
-### Advanced Options
+Built on the original [gh-space-shooter](https://github.com/czl9707/gh-space-shooter) project by [@czl9707](https://github.com/czl9707). This fork preserves the original MIT license and adapts its rendering palette and profile presentation.
 
-```bash
-# Save raw contribution data to JSON
-gh-space-shooter torvalds --raw-output data.json
+---
 
-# Load from previously saved JSON (saves API rate limits)
-gh-space-shooter --raw-input data.json --output game.webp
-
-# Combine options
-gh-space-shooter torvalds -o game.webp -ro data.json -s column
-```
-
-### Data Format
-
-When saved to JSON, the data includes:
-```json
-{
-  "username": "torvalds",
-  "total_contributions": 1234,
-  "weeks": [
-    {
-      "days": [
-        {
-          "date": "2024-01-01",
-          "count": 5,
-          "level": 2
-        }
-      ]
-    }
-  ]
-}
-```
-
-## License
-
-MIT
+<p align="center"><sub>BUILT WITH PYTHON · PILLOW · GITHUB ACTIONS</sub></p>
