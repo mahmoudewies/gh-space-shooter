@@ -25,7 +25,7 @@ def test_pellets_are_collected_and_increase_score():
     state = create_game(maze, pellets, ghost_count=0)
     for _ in range(len(state.route) - 1):
         state = advance_game(state, pellets)
-    assert state.score if hasattr(state, "score") else state.player.score == len(pellets)
+    assert state.player.score == len(pellets)
     assert len(state.collected) == len(pellets)
 
 
