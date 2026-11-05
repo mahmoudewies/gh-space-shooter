@@ -1,4 +1,4 @@
-name: Update Purple Space Shooter
+name: Update NEON MAZE
 
 on:
   schedule:
@@ -8,26 +8,35 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: update-neon-maze
+  cancel-in-progress: false
+
 jobs:
-  update-game:
+  update-maze:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install this fork
+      - name: Install project
         run: |
           python -m pip install --upgrade pip
-          pip install .
-      - name: Generate GIF
+          pip install ".[dev]"
+      - name: Generate NEON MAZE from GitHub contributions
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh-space-shooter mahmoudewies --output game.gif --strategy random --fps 40
-      - name: Commit GIF
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Repository secret GH_TOKEN is missing. Add a token with read:user permission."
+            exit 1
+          fi
+          gh-space-shooter mahmoudewies --game maze --output assets/neon-maze.gif
+      - name: Commit generated animation when changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add game.gif
-          git diff --cached --quiet || git commit -m "chore: update purple space shooter"
+          git add assets/neon-maze.gif
+          git diff --cached --quiet || git commit -m "chore: update NEON MAZE animation"
           git push
