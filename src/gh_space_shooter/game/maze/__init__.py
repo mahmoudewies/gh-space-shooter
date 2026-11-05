@@ -4,6 +4,7 @@ from .activity import EnergyPellet, build_energy_pellets
 from .entities import Ghost, Player
 from .generator import Maze, generate_maze
 from .pathfinding import find_path, reachable_cells
+from .renderer import render_neon_maze
 from .scene import GameState, advance_game, create_game, run_to_completion
 
 __all__ = [
@@ -18,5 +19,6 @@ __all__ = [
     "find_path",
     "generate_maze",
     "reachable_cells",
+    "render_neon_maze",
     "run_to_completion",
 ]
