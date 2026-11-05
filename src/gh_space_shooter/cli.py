@@ -77,6 +77,7 @@ def main(
         "--watermark",
         help="Add watermark to the GIF",
     ),
+    game: str = typer.Option("shooter", "--game", help="Game to render: shooter or maze"),
 ) -> None:
     """
     Fetch or load GitHub contribution graph data and display it.
@@ -103,6 +104,11 @@ def main(
         if not out and not write_dataurl_to:
             out = f"{username}-gh-space-shooter.gif"
 
+        if game not in {"shooter", "maze"}:
+            raise CLIError("Unknown game. Available: shooter, maze")
+        if game == "maze" and write_dataurl_to:
+            raise CLIError("--write-dataurl-to is only supported by the shooter renderer")
+
         # Load data from file or GitHub
         if raw_input:
             data = _load_data_from_file(raw_input)
@@ -120,9 +126,12 @@ def main(
 
         # Generate output if requested
         if write_dataurl_to or out:
-            output_path = write_dataurl_to or out
-            provider = _resolve_provider(output_path, bool(write_dataurl_to))
-            _generate_output(data, provider, strategy, fps, watermark, max_frames)
+            if game == "maze":
+                _generate_maze_output(data, out or f"{username}-neon-maze.gif")
+            else:
+                output_path = write_dataurl_to or out
+                provider = _resolve_provider(output_path, bool(write_dataurl_to))
+                _generate_output(data, provider, strategy, fps, watermark, max_frames)
 
     except CLIError as e:
         err_console.print(f"[bold red]Error:[/bold red] {e}")
@@ -176,6 +185,30 @@ def _save_data_to_file(data: ContributionData, file_path: str) -> None:
         console.print(f"\n[green]✓[/green] Data saved to {file_path}")
     except IOError as e:
         raise CLIError(f"Failed to save file '{file_path}': {e}")
+
+
+
+def _generate_maze_output(data: ContributionData, output_path: str) -> None:
+    """Render NEON MAZE from the existing contribution-calendar payload."""
+    from .game.maze import build_energy_pellets, generate_maze, render_neon_maze
+
+    days = [day for week in data.get("weeks", []) for day in week.get("days", [])]
+    active_days = [day for day in days if int(day.get("count", 0) or 0) > 0]
+    selected_days = sorted(
+        sorted(active_days, key=lambda day: (-int(day.get("count", 0)), day.get("date", "")))[:18],
+        key=lambda day: day.get("date", ""),
+    )
+    seed = int(data.get("total_contributions", 0) or 0)
+    maze = generate_maze(width=21, height=13, seed=seed)
+    pellets = build_energy_pellets(maze, selected_days)
+    destination = render_neon_maze(
+        maze, pellets, output_path, ghost_count=2, tile_size=20,
+        frames_per_step=1, frame_duration_ms=100, max_frames=1200,
+    )
+    console.print(
+        f"\n[green]✓[/green] NEON MAZE saved to {destination} "
+        f"({len(pellets)} energy pellets; {data.get('total_contributions', 0)} total contributions)"
+    )
 
 
 def _resolve_provider(file_path: str, is_dataurl: bool) -> OutputProvider:
