@@ -2,7 +2,7 @@
 
 > Design specification and implementation plan for the GitHub contribution-powered Pixel Art maze.
 
-**Status:** Design approved — implementation not started  
+**Status:** Maze engine, gameplay, pixel renderer, CLI integration, and automation workflow implemented; live-token validation and first profile GIF pending  
 **Repository:** mahmoudewies/gh-space-shooter  
 **Product direction:** Evolve the current Space Shooter fork into a classic top-down arcade maze. Preserve the existing contribution-data client and keep the old renderer intact until the maze prototype passes tests.
 
@@ -197,23 +197,23 @@ Do not update the profile README to point to a nonexistent or unverified GIF.
 - [ ] Add contribution-driven pellet placement.
 
 ### Phase 2 — Arcade gameplay
-- [ ] Implement player movement along a valid route.
-- [ ] Add pellet collection and score progression.
-- [ ] Add ghost patrol routes and collision animation.
-- [ ] Add exit and completion state.
+- [x] Implement player movement along a valid route.
+- [x] Add pellet collection and score progression.
+- [x] Add decorative ghost patrol animation (collision gameplay remains intentionally non-blocking).
+- [x] Add exit and completion state.
 
 ### Phase 3 — Pixel renderer
-- [ ] Draw maze, sprites, pellets, HUD, and effects with Pillow.
-- [ ] Render a complete frame sequence.
-- [ ] Encode and optimize the animated GIF.
-- [ ] Review readability, pacing, and file size.
+- [x] Draw maze, sprites, pellets, HUD, and effects with Pillow.
+- [x] Render a complete frame sequence.
+- [x] Encode and optimize the animated GIF.
+- [ ] Review final visual quality and file size on the first generated live GIF.
 
 ### Phase 4 — Integration and automation
-- [ ] Add CLI game selection / maze output path.
-- [ ] Add offline fixture-based generation.
-- [ ] Add unit tests and CI checks.
-- [ ] Configure GH_TOKEN secret and validate live GraphQL access.
-- [ ] Add scheduled and manual GIF generation.
+- [x] Add CLI game selection / maze output path (`--game maze`).
+- [x] Add offline fixture-based generation.
+- [x] Add unit tests and CI checks.
+- [ ] Configure repository secret `GH_TOKEN` with `read:user` and validate live GraphQL access.
+- [x] Add scheduled and manual GIF generation workflow.
 
 ### Phase 5 — Profile launch
 - [ ] Generate the first live-data GIF.
